@@ -1,12 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public GameState GameState;
+    public GameState gameState;
 
     private void Awake()
     {
@@ -15,20 +12,19 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        ChangeState(GameState.GenerateGrid);
+        changeState(GameState.generateGrid);
     }
 
-    public void ChangeState(GameState newState)
+    public void changeState(GameState newState)
     {
-        GameState = newState;
+        gameState = newState;
         switch (newState)
         {
-            case GameState.GenerateGrid:
-                Debug.Log(GridManager.Instance);
-                GridManager.Instance.GenerateGrid();
+            case GameState.generateGrid:
+                GridManager.Instance.generateGrid();
                 break;
-            case GameState.SpawnHeroes:
-                UnitManager.Instance.SpawnHeroes();
+            case GameState.spawnHeroes:
+                UnitManager.Instance.spawnHeroes();
                 break;
             // case GameState.SpawnEnemies:
             //     UnitManager.Instance.SpawnEnemies();
@@ -45,9 +41,9 @@ public class GameManager : MonoBehaviour
 
 public enum GameState
 {
-    GenerateGrid = 0,
-    SpawnHeroes = 1,
-    SpawnEnemies = 2,
-    HeroesTurn = 3,
-    EnemiesTurn = 4
+    generateGrid = 0,
+    spawnHeroes = 1,
+    spawnEnemies = 2,
+    heroesTurn = 3,
+    enemiesTurn = 4
 }

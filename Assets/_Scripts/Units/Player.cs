@@ -1,16 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class Player : BaseUnit
 {
-    void Start()
+    private void Start()
     {
-        this.UnitName = "Player";
+        UnitName = "Player";
     }
-    
-    void Update()
+
+    private void Update()
     {
-        
     }
 }

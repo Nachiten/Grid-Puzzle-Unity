@@ -1,42 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MenuManager : MonoBehaviour {
+public class MenuManager : MonoBehaviour
+{
     public static MenuManager Instance;
 
-    [SerializeField] private GameObject _selectedHeroObject,_tileObject,_tileUnitObject;
+    [SerializeField] private GameObject selectedHeroObject, tileObject, tileUnitObject;
 
-    private void Awake() {
+    private void Awake()
+    {
         Instance = this;
     }
 
-    public void ShowTileInfo(Tile tile) {
-
+    public void showTileInfo(Tile tile)
+    {
         if (tile == null)
         {
-            _tileObject.SetActive(false);
-            _tileUnitObject.SetActive(false);
+            tileObject.SetActive(false);
+            tileUnitObject.SetActive(false);
             return;
         }
 
-        _tileObject.GetComponentInChildren<Text>().text = tile.TileName;
-        _tileObject.SetActive(true);
+        tileObject.GetComponentInChildren<Text>().text = tile.TileName;
+        tileObject.SetActive(true);
 
-        if (tile.OccupiedUnit) {
-            _tileUnitObject.GetComponentInChildren<Text>().text = tile.OccupiedUnit.UnitName;
-            _tileUnitObject.SetActive(true);
+        if (tile.OccupiedUnit)
+        {
+            tileUnitObject.GetComponentInChildren<Text>().text = tile.OccupiedUnit.UnitName;
+            tileUnitObject.SetActive(true);
         }
     }
 
-    public void ShowSelectedHero(BaseHero hero) {
-        if (hero == null) {
-            _selectedHeroObject.SetActive(false);
+    public void showSelectedHero(BaseHero hero)
+    {
+        if (hero == null)
+        {
+            selectedHeroObject.SetActive(false);
             return;
         }
 
-        _selectedHeroObject.GetComponentInChildren<Text>().text = hero.UnitName;
-        _selectedHeroObject.SetActive(true);
+        selectedHeroObject.GetComponentInChildren<Text>().text = hero.UnitName;
+        selectedHeroObject.SetActive(true);
     }
 }

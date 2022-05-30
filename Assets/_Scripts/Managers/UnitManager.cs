@@ -1,58 +1,65 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
-public class UnitManager : MonoBehaviour {
+public class UnitManager : MonoBehaviour
+{
     public static UnitManager Instance;
-    
-    private List<ScriptableUnit> _units;
-    public BaseHero SelectedHero;
-    
-    private void Awake() {
+    public BaseHero selectedHero;
+
+    private List<ScriptableUnit> units;
+
+    private void Awake()
+    {
         Instance = this;
-    
-        _units = Resources.LoadAll<ScriptableUnit>("Units").ToList();
-    
+
+        units = Resources.LoadAll<ScriptableUnit>("Units").ToList();
     }
-    
-    public void SpawnHeroes() {
-        var heroCount = 1;
-    
-        for (int i = 0; i < heroCount; i++) {
-            var randomPrefab = GetRandomUnit<BaseHero>(Faction.Hero);
-            var spawnedHero = Instantiate(randomPrefab);
-            var randomSpawnTile = GridManager.Instance.GetHeroSpawnTile();
-    
+
+    public void spawnHeroes()
+    {
+        const int heroCount = 1;
+
+        Transform unitParent = GameObject.Find("Units").transform;
+
+        for (int i = 0; i < heroCount; i++)
+        {
+            BaseHero randomPrefab = getRandomUnit<BaseHero>(Faction.Hero);
+            BaseHero spawnedHero = Instantiate(randomPrefab, unitParent);
+
+            spawnedHero.name = randomPrefab.name;
+
+            Tile randomSpawnTile = GridManager.Instance.getHeroSpawnTile();
             randomSpawnTile.SetUnit(spawnedHero);
         }
-    
-        GameManager.Instance.ChangeState(GameState.SpawnEnemies);
+
+        GameManager.Instance.changeState(GameState.spawnEnemies);
     }
-    
-    public void SpawnEnemies()
+
+    public void spawnEnemies()
     {
-        var enemyCount = 1;
-    
+        int enemyCount = 1;
+
         for (int i = 0; i < enemyCount; i++)
         {
-            var randomPrefab = GetRandomUnit<BaseEnemy>(Faction.Enemy);
-            var spawnedEnemy = Instantiate(randomPrefab);
+            BaseEnemy randomPrefab = getRandomUnit<BaseEnemy>(Faction.Enemy);
+            BaseEnemy spawnedEnemy = Instantiate(randomPrefab);
             //var randomSpawnTile = GridManager.Instance.GetEnemySpawnTile();
-    
+
             // randomSpawnTile.SetUnit(spawnedEnemy);
         }
-    
-        GameManager.Instance.ChangeState(GameState.HeroesTurn);
+
+        GameManager.Instance.changeState(GameState.heroesTurn);
     }
-    
-    private T GetRandomUnit<T>(Faction faction) where T : BaseUnit {
-        return (T)_units.Where(u => u.Faction == faction).OrderBy(o => Random.value).First().UnitPrefab;
+
+    private T getRandomUnit<T>(Faction faction) where T : BaseUnit
+    {
+        return (T) units.Where(u => u.Faction == faction).OrderBy(o => Random.value).First().UnitPrefab;
     }
-    
-    public void SetSelectedHero(BaseHero hero) {
-        SelectedHero = hero;
-        MenuManager.Instance.ShowSelectedHero(hero);
+
+    public void setSelectedHero(BaseHero hero)
+    {
+        selectedHero = hero;
+        MenuManager.Instance.showSelectedHero(hero);
     }
 }

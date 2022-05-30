@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public enum Direction
@@ -10,13 +9,14 @@ public enum Direction
     Right
 }
 
-public class BaseUnit : MonoBehaviour {
+public class BaseUnit : MonoBehaviour
+{
     public string UnitName;
     public Tile OccupiedTile;
 
-    public void move(Direction direction, int distance)
+    protected void move(Direction direction, int distance)
     {
-        Vector2 tilePosition = GridManager.Instance.GetPositionOfTile(this.OccupiedTile);
+        Vector2 tilePosition = GridManager.Instance.getPositionOfTile(OccupiedTile);
 
         switch (direction)
         {
@@ -32,13 +32,15 @@ public class BaseUnit : MonoBehaviour {
             case Direction.Right:
                 tilePosition.x += distance;
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
         }
 
-        Tile newTile = GridManager.Instance.GetTileAtPosition(tilePosition);
+        Tile newTile = GridManager.Instance.getTileAtPosition(tilePosition);
 
         if (newTile == null)
             return;
-        
+
         newTile.SetUnit(this);
     }
 }
