@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -21,20 +22,21 @@ public class GameManager : MonoBehaviour
         switch (newState)
         {
             case GameState.generateGrid:
+                Debug.Log("[Game Manager] Generating Grid...");
                 GridManager.Instance.generateGrid();
+                
                 break;
-            case GameState.spawnHeroes:
-                UnitManager.Instance.spawnHeroes();
+            case GameState.doOrderedStarts:
+                Debug.Log("[Game Manager] Executing ordered starts...");
+                GridManager.Instance.doStart();
+                
                 break;
-            // case GameState.SpawnEnemies:
-            //     UnitManager.Instance.SpawnEnemies();
-            //     break;
-            // case GameState.HeroesTurn:
-            //     break;
-            // case GameState.EnemiesTurn:
-            //     break;
-            // default:
-            //     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
+            case GameState.spawnPlayer:
+                Debug.Log("[Game Manager] Spawning Player...");
+                UnitManager.Instance.spawnPlayer();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
         }
     }
 }
@@ -42,8 +44,6 @@ public class GameManager : MonoBehaviour
 public enum GameState
 {
     generateGrid = 0,
-    spawnHeroes = 1,
-    spawnEnemies = 2,
-    heroesTurn = 3,
-    enemiesTurn = 4
+    doOrderedStarts = 1,
+    spawnPlayer = 2,
 }

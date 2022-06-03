@@ -16,29 +16,29 @@ public class BaseUnit : MonoBehaviour
 
     protected void move(Direction direction, int distance)
     {
-        Vector2 tilePosition = GridManager.Instance.getPositionOfTile(OccupiedTile);
+        Vector2 previousTilePosition = GridManager.Instance.getPositionOfTile(OccupiedTile);
 
         switch (direction)
         {
             case Direction.Up:
-                tilePosition.y += distance;
+                previousTilePosition.y += distance;
                 break;
             case Direction.Down:
-                tilePosition.y -= distance;
+                previousTilePosition.y -= distance;
                 break;
             case Direction.Left:
-                tilePosition.x -= distance;
+                previousTilePosition.x -= distance;
                 break;
             case Direction.Right:
-                tilePosition.x += distance;
+                previousTilePosition.x += distance;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
         }
 
-        Tile newTile = GridManager.Instance.getTileAtPosition(tilePosition);
+        Tile newTile = GridManager.Instance.getTileAtPosition(previousTilePosition);
 
-        if (newTile == null)
+        if (newTile == null || !newTile.Walkable)
             return;
 
         newTile.SetUnit(this);

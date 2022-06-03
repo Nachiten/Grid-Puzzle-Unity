@@ -2,25 +2,24 @@ using UnityEngine;
 
 public abstract class Tile : MonoBehaviour
 {
-    public string TileName;
-    [SerializeField] protected SpriteRenderer _renderer;
-    [SerializeField] private GameObject _highlight;
+  
+    // [SerializeField] private GameObject _highlight;
 
     public BaseUnit OccupiedUnit;
     protected bool _isWalkable = true;
     public bool Walkable => _isWalkable && OccupiedUnit == null;
 
-    private void OnMouseEnter()
-    {
-        _highlight.SetActive(true);
-        // MenuManager.Instance.ShowTileInfo(this);
-    }
-
-    private void OnMouseExit()
-    {
-        _highlight.SetActive(false);
-        // MenuManager.Instance.ShowTileInfo(null);
-    }
+    // private void OnMouseEnter()
+    // {
+    //     // _highlight.SetActive(true);
+    //     // MenuManager.Instance.ShowTileInfo(this);
+    // }
+    //
+    // private void OnMouseExit()
+    // {
+    //     // _highlight.SetActive(false);
+    //     // MenuManager.Instance.ShowTileInfo(null);
+    // }
 
     public virtual void Init(int x, int y)
     {
@@ -60,7 +59,12 @@ public abstract class Tile : MonoBehaviour
         if (unit.OccupiedTile != null)
             unit.OccupiedTile.OccupiedUnit = null;
 
-        unit.transform.position = transform.position;
+        Transform unitTransform = unit.transform;
+        
+        unitTransform.position = transform.position;
+        unitTransform.position += unitTransform.forward * -0.01f;
+        unitTransform.rotation = transform.rotation;
+
         OccupiedUnit = unit;
         unit.OccupiedTile = this;
     }

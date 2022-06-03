@@ -1,43 +1,48 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class GridManager : MonoBehaviour
 {
     public static GridManager Instance;
-    
-    private int width = 5, height = 5;
-    
-    // TODO - Fixear problema con la herencia
+
+    public int width = 5, height = 5;
     public Tile grassTile, mountainTile;
-    
-    // Patron STATE
-    private GridManager actualFaceState;
-    
+
+    // Patron STATE (ponele)
+    private FaceManager actualFaceState;
+
     private void Awake()
     {
         Instance = this;
     }
 
-    private void Start()
+    public void doStart()
     {
-        actualFaceState = FrontGridManager.instance;
+        setNewFaceState(FrontGridManager.Instance);
+        
+        GameManager.Instance.changeState(GameState.spawnPlayer);
+    }
+
+    public void setNewFaceState(FaceManager newFaceState)
+    {
+        actualFaceState = newFaceState;
     }
 
     public void generateGrid()
     {
-        Debug.Log("Grid manager execute");
-        FrontGridManager.instance.generateGrid();
-        BackGridManager.instance.generateGrid();
-        TopGridManager.instance.generateGrid();
-        BottomGridManager.instance.generateGrid();
-        RightGridManager.instance.generateGrid();
-        LeftGridManager.instance.generateGrid();
+        BottomGridManager.Instance.generateGrid();
+        BackGridManager.Instance.generateGrid();
+        FrontGridManager.Instance.generateGrid();
+        TopGridManager.Instance.generateGrid();
+        RightGridManager.Instance.generateGrid();
+        LeftGridManager.Instance.generateGrid();
+        
+        GameManager.Instance.changeState(GameState.doOrderedStarts);
     }
 
-    protected void generateParticularGrid(Transform parent, Vector3 parentPosition, Quaternion parentRotation, ref Dictionary<Vector2, Tile> tiles)
+    public void generateParticularGrid(Transform parent, Vector3 parentPosition, Quaternion parentRotation,
+        ref Dictionary<Vector2, Tile> tiles)
     {
         for (int x = 0; x < width; x++)
         for (int y = 0; y < height; y++)
@@ -50,11 +55,11 @@ public class GridManager : MonoBehaviour
 
             tiles[new Vector2(x, y)] = spawnedTile;
         }
-        
+
         parent.position = parentPosition;
         parent.rotation = parentRotation;
     }
-    
+
     // public void generateGrid()
     // {
     //     foreach (string faceName in facesNames)
@@ -112,12 +117,12 @@ public class GridManager : MonoBehaviour
     //             dictionary[new Vector2(x, y)] = spawnedTile;
     //         }
     // }
-    
+
     public Tile getHeroSpawnTile()
     {
         return actualFaceState.getHeroSpawnTile();
     }
-    
+
     public Tile getTileAtPosition(Vector2 pos)
     {
         return actualFaceState.getTileAtPosition(pos);
@@ -128,19 +133,19 @@ public class GridManager : MonoBehaviour
         return actualFaceState.getPositionOfTile(tile);
     }
 
-    protected Tile getHeroSpawnTile(Dictionary<Vector2, Tile> tiles)
+    public Tile getHeroSpawnTile(Dictionary<Vector2, Tile> tiles)
     {
         return tiles.Where(t => t.Key.x < width / 2f && t.Value.Walkable).OrderBy(t => Random.value).First().Value;
     }
 
-    protected Tile getTileAtPosition(Vector2 pos, Dictionary<Vector2, Tile> tiles)
+    public Tile getTileAtPosition(Vector2 pos, Dictionary<Vector2, Tile> tiles)
     {
         return tiles.TryGetValue(pos, out Tile tile)
             ? tile
             : null;
     }
 
-    protected Vector2 getPositionOfTile(Tile tile, Dictionary<Vector2, Tile> tiles)
+    public Vector2 getPositionOfTile(Tile tile, Dictionary<Vector2, Tile> tiles)
     {
         return tiles.First(t => t.Value.Equals(tile)).Key;
     }
