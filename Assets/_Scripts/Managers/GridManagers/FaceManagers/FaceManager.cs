@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class FaceManager : MonoBehaviour
 {
@@ -22,11 +24,14 @@ public class FaceManager : MonoBehaviour
 
     protected void doAwake(string faceName, Vector3 newParentPosition, Quaternion newParentRotation)
     {
-        parent = GameObject.Find("Tiles " + faceName).transform;
+        parent = GameObject.Find("Map Tiles" + faceName)?.transform;
         tiles = new Dictionary<Vector2, Tile>();
-        
         map = GameObject.Find("Map");
-
+        
+        Assert.IsNotNull(parent);
+        Assert.IsNotNull(tiles);
+        Assert.IsNotNull(map);
+        
         parentPosition = newParentPosition;
         parentRotation = newParentRotation;
     }
@@ -57,7 +62,6 @@ public class FaceManager : MonoBehaviour
 
                 return tileFound;
             }
-            
         }
         
         if (pos.y < 0)
