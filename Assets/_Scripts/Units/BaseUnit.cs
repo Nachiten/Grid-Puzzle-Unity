@@ -16,7 +16,7 @@ public class BaseUnit : MonoBehaviour
 
     protected void move(Direction direction, int distance)
     {
-        Vector2 previousTilePosition = GridManager.Instance.getPositionOfTile(OccupiedTile);
+        Vector3 previousTilePosition = OccupiedTile.transform.position;
 
         switch (direction)
         {
@@ -36,9 +36,10 @@ public class BaseUnit : MonoBehaviour
                 throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
         }
 
+        // Aca tiene que llegar la celda a donde me voy a mover
         Tile newTile = GridManager.Instance.getTileAtPosition(previousTilePosition);
 
-        if (newTile == null || !newTile.Walkable)
+        if (!newTile || !newTile.Walkable)
             return;
 
         newTile.SetUnit(this);

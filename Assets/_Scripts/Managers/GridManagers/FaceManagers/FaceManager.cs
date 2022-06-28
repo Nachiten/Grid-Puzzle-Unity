@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -22,9 +22,12 @@ public class FaceManager : MonoBehaviour
 
     private GameObject map;
 
+    // [HideInInspector]
+    public bool currentFace;
+
     protected void doAwake(string faceName, Vector3 newParentPosition, Quaternion newParentRotation)
     {
-        parent = GameObject.Find("Map Tiles" + faceName)?.transform;
+        parent = GameObject.Find("Tiles " + faceName)?.transform;
         tiles = new Dictionary<Vector2, Tile>();
         map = GameObject.Find("Map");
         
@@ -41,73 +44,111 @@ public class FaceManager : MonoBehaviour
         GridManager.Instance.generateParticularGrid(parent, parentPosition, parentRotation, ref tiles);
     }
 
+    public void printTiles()
+    {
+        foreach (KeyValuePair<Vector2, Tile> tile in tiles)
+        {
+            Debug.Log(tile.Value.name);
+        }
+    }
+
     public Tile getHeroSpawnTile()
     {
         return GridManager.Instance.getHeroSpawnTile(tiles);
+
     }
-
-    public Tile getTileAtPosition(Vector2 pos)
+    
+    // ReSharper disable Unity.PerformanceAnalysis
+    public Tile getTileAtPosition(Vector3 pos)
     {
-        int height = GridManager.Instance.height;
-        int width = GridManager.Instance.width;
-
-        if (pos.y >= height)
-        {
-            Tile tileFound = topNeighbor.getTileAtPosition(pos - new Vector2(0, height));
-
-            if (tileFound && tileFound.Walkable)
-            {
-                map.transform.Rotate(new Vector3(-90, 0, 0));
-                GridManager.Instance.setNewFaceState(topNeighbor);
-
-                return tileFound;
-            }
-        }
+        Debug.Log("Getting tile at: " + pos);
         
-        if (pos.y < 0)
-        {
-            Tile tileFound = bottomNeighbor.getTileAtPosition(pos + new Vector2(0, height));
+        int tileWidth = GridManager.Instance.tileWidth;
 
-            if (tileFound && tileFound.Walkable)
+        int maxHeight = (int)Math.Floor(GridManager.Instance.height * tileWidth / 2f);
+        int minHeight = maxHeight * -1;
+        
+        int maxWidth = (int)Math.Floor(GridManager.Instance.width / 2f);
+        int minWidth = maxWidth * -1;
+
+        // Debug.Log("maxHeight: " + maxHeight);
+        // Debug.Log("minHeight: " + minHeight);
+        // Debug.Log("maxWidth: " + maxWidth);
+        // Debug.Log("minWidth: " + minWidth);
+
+        // TODO - NEIGHBORS CHANGE DEPENDING ON FACE ROTATION
+        if (currentFace)
+        { 
+            if (pos.y > maxHeight)
             {
-                map.transform.Rotate(new Vector3(90, 0, 0));
-                GridManager.Instance.setNewFaceState(bottomNeighbor);
-
-                return tileFound;
-            }
-        }
-
-        if (pos.x >= width)
-        {
-            Tile tileFound = rightNeighbor.getTileAtPosition(pos - new Vector2(width, 0));
-
-            if (tileFound && tileFound.Walkable)
-            {
-                map.transform.Rotate(new Vector3(0, 90, 0));
-                GridManager.Instance.setNewFaceState(rightNeighbor);
-
-                return tileFound;
-            }
-        }
-
-        if (pos.x < 0)
-        {
-            Tile tileFound = leftNeighbor.getTileAtPosition(pos + new Vector2(width, 0));
+                Debug.Log("Out of bounds on Y+");
+                    
+                Tile tileFound = topNeighbor.getTileAtPosition(pos + new Vector3(0, -0.49f, 0.51f));
+                Debug.Log("Tile found: " + tileFound);
             
-            if (tileFound && tileFound.Walkable)
+                if (tileFound)
+                {
+                    map.transform.Rotate(new Vector3(-90, 0, 0));
+                    GridManager.Instance.setNewFaceState(topNeighbor);
+            
+                    return tileFound;
+                }
+            }
+                
+            else if (pos.y < minHeight)
             {
-                map.transform.Rotate(new Vector3(0, -90, 0));
-                GridManager.Instance.setNewFaceState(leftNeighbor);
-
-                return tileFound;
+                Debug.Log("Out of bounds on Y-");
+                    
+                Tile tileFound = bottomNeighbor.getTileAtPosition(pos + new Vector3(0, 0.49f, 0.51f));
+                Debug.Log("Tile found: " + tileFound);
+            
+                if (tileFound)
+                {
+                    map.transform.Rotate(new Vector3(90, 0, 0));
+                    GridManager.Instance.setNewFaceState(bottomNeighbor);
+            
+                    return tileFound;
+                }
+            }
+            
+            else if (pos.x > maxWidth)
+            {
+                Debug.Log("Out of bounds on X+");
+                    
+                Tile tileFound = rightNeighbor.getTileAtPosition(pos + new Vector3(-0.49f, 0, 0.51f));
+                Debug.Log("Tile found: " + tileFound);
+            
+                if (tileFound)
+                {
+                    map.transform.Rotate(new Vector3(0, 90, 0));
+                    GridManager.Instance.setNewFaceState(rightNeighbor);
+            
+                    return tileFound;
+                }
+            }
+                
+            else if (pos.x < minWidth)
+            {
+                Debug.Log("Out of bounds on X-");
+                    
+                Tile tileFound = leftNeighbor.getTileAtPosition(pos + new Vector3(0.49f, 0, 0.51f));
+                Debug.Log("Tile found: " + tileFound);
+            
+                if (tileFound)
+                {
+                    map.transform.Rotate(new Vector3(0, -90, 0));
+                    GridManager.Instance.setNewFaceState(leftNeighbor);
+            
+                    return tileFound;
+                }
             }
         }
         
         return GridManager.Instance.getTileAtPosition(pos, tiles);
     }
 
-    public Vector2 getPositionOfTile(Tile tile)
-    {
-        return GridManager.Instance.getPositionOfTile(tile, tiles);
-    }
+    // public Vector2 getGlobalPositionOfTile(Tile tile)
+    // {
+    //     return GridManager.Instance.getGlobalPositionOfTile(tile, tiles);
+    // }
 }
